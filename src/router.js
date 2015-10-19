@@ -25,14 +25,19 @@ function reduceMiddleWares(cbGenerator, routes) {
   let routesCpy = Object.assign ({}, routes);
 
   Object.keys(routesCpy).forEach(curMountPath => {
-    Object.keys(routesCpy[curMountPath].methods).forEach(methodType => {
-      let method = routes[curMountPath].methods[methodType];
-      routesCpy[curMountPath].methods[methodType] = cbGenerator(method.security, method.callbacks);
 
-      if (routesCpy[curMountPath].routes) {
-        routesCpy[curMountPath].routes = reduceMiddleWares(cbGenerator, routesCpy[curMountPath].routes);
-      }
-    });
+    if (routesCpy[curMountPath].methods) {
+      Object.keys(routesCpy[curMountPath].methods).forEach(methodType => {
+        let method = routes[curMountPath].methods[methodType];
+        routesCpy[curMountPath].methods[methodType] = cbGenerator(method.security, method.callbacks);
+
+      });
+    }
+
+    if (routesCpy[curMountPath].routes) {
+      routesCpy[curMountPath].routes = reduceMiddleWares(cbGenerator, routesCpy[curMountPath].routes);
+    }
+
   });
   return routesCpy;
 }
@@ -40,9 +45,10 @@ function reduceMiddleWares(cbGenerator, routes) {
 /**
  * Create router API
  * @param routes
+ * @param rootMountPath
  * @returns {*}
  */
-function createRouterAPI(routes) {
+function createRouterAPI(routes, rootMountPath) {
 
   let routesCpy = reduceMiddleWares(function (userPrivileges, callbacks) {
     let middleWare = [];
@@ -53,7 +59,7 @@ function createRouterAPI(routes) {
     return middleWare.concat (callbacks);
   }, routes);
 
-  return router.createAPI (routesCpy, null);
+  return router.createAPI (routesCpy, rootMountPath);
 }
 
-export default createRouterAPI(routesAPI);
+export default createRouterAPI(routesAPI, '/api');

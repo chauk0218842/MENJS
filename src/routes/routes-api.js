@@ -3,7 +3,7 @@
 import rootAPI from './root/root-api';
 import postsAPI from './posts/posts-api';
 import usersAPI from './users/users-api';
-import session from './session/session-api';
+import sessionAPI from './session/session-api';
 
 export default {
   '/': {
@@ -14,6 +14,27 @@ export default {
       }
     },
     routes: {
+      '_session': {
+        methods: {},
+        routes: {
+          'login': {
+            methods: {
+              post: {
+                security: ['public', 'member', 'admin'],
+                callbacks: sessionAPI.login
+              }
+            }
+          },
+          'logout': {
+            methods: {
+              post: {
+                security: ['public', 'member', 'admin'],
+                callbacks: sessionAPI.login
+              }
+            }
+          }
+        }
+      },
       'posts': {
         methods: {
           get: {
@@ -47,7 +68,7 @@ export default {
       'users': {
         methods: {
           get: {
-            security: ['admin'],
+            security: 'admin',
             callbacks: usersAPI.fetch
           }
         },
@@ -59,15 +80,15 @@ export default {
                 callbacks: usersAPI.fetchById
               },
               'delete': {
-                security: ['admin'],
+                security: 'admin',
                 callbacks: usersAPI.deleteById
               },
               post: {
-                security: ['admin'],
+                security: 'admin',
                 callbacks: usersAPI.create
               },
               put: {
-                security: ['admin'],
+                security: 'admin',
                 callbacks: usersAPI.updateById
               }
             }
