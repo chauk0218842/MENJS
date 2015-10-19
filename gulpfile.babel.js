@@ -14,7 +14,7 @@ gulp.task('lint', function () {
 
 gulp.task('server', function (options) {
   const config = {
-    script: path.join(__dirname, 'src', 'server.js'),
+    script: path.join(__dirname, 'src', 'server.es5.js'),
     ext: 'js',
     env: {
       'NODE_ENV': 'development'

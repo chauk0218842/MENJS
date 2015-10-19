@@ -15,7 +15,7 @@ function createUserPrivilegeMiddleWare(roles) {
 }
 
 /**
- * Reduce routes's middleware
+ * Reduce router's middleware
  * @param cbGenerator
  * @param routes
  * @returns {*}
