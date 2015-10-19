@@ -12,7 +12,7 @@ import mwAPI from './middleware/middleware-api';
  */
 function createRouterAPI(routes, rootMountPath) {
 
-  let routesCpy = mwAPI.reduceMiddleWares(function (userPrivileges, callbacks) {
+  let routesCpy = mwAPI.reduceRoutes(function (userPrivileges, callbacks) {
     let middleWare = [];
     if (userPrivileges) {
       middleWare = middleWare.concat(mwAPI.createUserPrivileges(userPrivileges));

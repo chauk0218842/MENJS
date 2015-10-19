@@ -2,8 +2,7 @@
 
 import bodyParser from 'body-parser';
 
-export default {
-  options: [
+export default [
     bodyParser.urlencoded({extended: true}),
     bodyParser.json(),
     function (req, res, next) {
@@ -17,5 +16,4 @@ export default {
       console.log (Date() + ' Request received: ' + req.originalUrl);
       next();
     }
-  ]
-};
+  ];

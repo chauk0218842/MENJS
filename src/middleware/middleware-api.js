@@ -12,14 +12,14 @@ function createUserPrivileges(roles) {
 }
 
 /**
- * Reduce router's middleware
+ * Reduce router's middleware routes
  * @param cbGenerator
  * @param routes
  * @returns {*}
  */
-function reduceMiddleWares(cbGenerator, routes) {
+function reduceRoutes(cbGenerator, routes) {
 
-  let routesCpy = Object.assign ({}, routes);
+  let routesCpy = Object.assign({}, routes);
 
   Object.keys(routesCpy).forEach(curMountPath => {
 
@@ -31,7 +31,7 @@ function reduceMiddleWares(cbGenerator, routes) {
     }
 
     if (routesCpy[curMountPath].routes) {
-      routesCpy[curMountPath].routes = reduceMiddleWares(cbGenerator, routesCpy[curMountPath].routes);
+      routesCpy[curMountPath].routes = reduceRoutes(cbGenerator, routesCpy[curMountPath].routes);
     }
 
   });
@@ -40,5 +40,5 @@ function reduceMiddleWares(cbGenerator, routes) {
 
 export default {
   createUserPrivileges: createUserPrivileges,
-  reduceMiddleWares: reduceMiddleWares
+  reduceRoutes: reduceRoutes
 };
