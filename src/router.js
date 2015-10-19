@@ -2,45 +2,7 @@
 
 import router from './lib/router';
 import routesAPI from './routes/routes-api';
-
-/**
- * Create a user privileges middles
- * @param roles
- * @returns {Function}
- */
-function createUserPrivilegeMiddleWare(roles) {
-  return function (req, res, next) {
-    next();
-  };
-}
-
-/**
- * Reduce router's middleware
- * @param cbGenerator
- * @param routes
- * @returns {*}
- */
-function reduceMiddleWares(cbGenerator, routes) {
-
-  let routesCpy = Object.assign ({}, routes);
-
-  Object.keys(routesCpy).forEach(curMountPath => {
-
-    if (routesCpy[curMountPath].methods) {
-      Object.keys(routesCpy[curMountPath].methods).forEach(methodType => {
-        let method = routes[curMountPath].methods[methodType];
-        routesCpy[curMountPath].methods[methodType] = cbGenerator(method.security, method.callbacks);
-
-      });
-    }
-
-    if (routesCpy[curMountPath].routes) {
-      routesCpy[curMountPath].routes = reduceMiddleWares(cbGenerator, routesCpy[curMountPath].routes);
-    }
-
-  });
-  return routesCpy;
-}
+import mwAPI from './middleware/middleware-api';
 
 /**
  * Create router API
@@ -50,10 +12,10 @@ function reduceMiddleWares(cbGenerator, routes) {
  */
 function createRouterAPI(routes, rootMountPath) {
 
-  let routesCpy = reduceMiddleWares(function (userPrivileges, callbacks) {
+  let routesCpy = mwAPI.reduceMiddleWares(function (userPrivileges, callbacks) {
     let middleWare = [];
     if (userPrivileges) {
-      middleWare = middleWare.concat (createUserPrivilegeMiddleWare(userPrivileges));
+      middleWare = middleWare.concat(mwAPI.createUserPrivileges(userPrivileges));
     }
 
     return middleWare.concat (callbacks);
