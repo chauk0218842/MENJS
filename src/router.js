@@ -12,16 +12,27 @@ import mwAPI from './middleware/middleware-api';
  */
 function createRouterAPI(routes, rootMountPath) {
 
-  let routesCpy = mwAPI.reduceRoutes(function (userPrivileges, callbacks) {
-    let middleWare = [];
-    if (userPrivileges) {
-      middleWare = middleWare.concat(mwAPI.createUserPrivileges(userPrivileges));
+  let routesCpy = router.mapMounts(function mapMountsHandler (route, mountPath, mount) {
+    if (route.methods) {
+      router.mapMethods(function (method) {
+        let mw = [];
+        if (method.security) {
+          mw = mw.concat (mwAPI.createUserPrivileges(method.security));
+        }
+
+        return mw.concat(method.callbacks)
+      }, route.methods, mountPath, mount);
     }
 
-    return middleWare.concat (callbacks);
-  }, routes);
+    if (route.routes) {
+      route.routes = router.mapMounts(mapMountsHandler, route.routes);
+    }
 
-  return router.createAPI (routesCpy, rootMountPath);
+    return route;
+
+  }, Object.assign ({}, routes));
+
+  return router.createAPI(router.create(null), rootMountPath, routesCpy);
 }
 
 export default createRouterAPI(routesAPI, '/api');
