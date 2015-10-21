@@ -12,7 +12,7 @@ let createRouter = express.Router;
  */
 function mapMounts(handler, routes) {
   Object.keys(routes).forEach(mountPath => {
-    routes[mountPath] = handler(routes[mountPath], mountPath, routes)
+    routes[mountPath] = handler(routes[mountPath], mountPath, routes);
   });
 
   return routes;

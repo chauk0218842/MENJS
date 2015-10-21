@@ -16,11 +16,20 @@ function createRouterAPI(routes, rootMountPath) {
     if (route.methods) {
       router.mapMethods(function (method) {
         let mw = [];
+
+        if (method instanceof Array || method instanceof Function) {
+          mw = mw.concat(method);
+        }
+
         if (method.security) {
           mw = mw.concat (mwAPI.createUserPrivileges(method.security));
         }
 
-        return mw.concat(method.callbacks)
+        if (method.callbacks) {
+          mw = mw.concat(method.callbacks);
+        }
+
+        return mw;
       }, route.methods, mountPath, mount);
     }
 
