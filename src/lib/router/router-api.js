@@ -7,15 +7,15 @@ let createRouter = express.Router;
 /**
  * Map router mounts helper util
  * @param handler
- * @param routes
+ * @param mounts
  * @returns {*}
  */
-function mapMounts(handler, routes) {
-  Object.keys(routes).forEach(mountPath => {
-    routes[mountPath] = handler(routes[mountPath], mountPath, routes);
+function mapMounts(handler, mounts) {
+  Object.keys(mounts).forEach(mountPath => {
+    mounts[mountPath] = handler(mounts[mountPath], mountPath, mounts);
   });
 
-  return routes;
+  return mounts;
 }
 
 /**
@@ -26,7 +26,7 @@ function mapMounts(handler, routes) {
  * @param mount
  * @returns {*}
  */
-function mapMethods(handler, methods, mountPath, mount) {
+function mapMethods(handler, mountPath, mount, methods) {
   Object.keys(methods).forEach(type => {
     methods[type] = handler(methods[type], type, mountPath, mount);
   });
@@ -35,13 +35,13 @@ function mapMethods(handler, methods, mountPath, mount) {
 }
 
 /**
- * Create a router API
+ * Map routes method helper util
  * @param router
  * @param rootMountPath
  * @param routes
  * @returns {*}
  */
-function createAPI(router, rootMountPath, routes) {
+function mapRoutes(router, rootMountPath, routes) {
 
   rootMountPath = rootMountPath || '';
   mapMounts(function (route, mountPath, mount) {
@@ -53,12 +53,12 @@ function createAPI(router, rootMountPath, routes) {
         console.log('Created mount ' + type + ' ' + fullMountPath);
 
         return method;
-      }, route.methods, mountPath, mount);
+      }, mountPath, mount, route.methods);
     }
 
     if (route.routes) {
       let fullMountPath = (rootMountPath + '/' + mountPath).replace(/\/\//g, '/');
-      router.use(fullMountPath, createAPI(router, fullMountPath, route.routes));
+      router.use(fullMountPath, mapRoutes(router, fullMountPath, route.routes));
     }
 
     return route;
@@ -70,7 +70,7 @@ function createAPI(router, rootMountPath, routes) {
 
 export default {
   create: createRouter,
-  createAPI: createAPI,
+  mapRoutes: mapRoutes,
   mapMounts: mapMounts,
   mapMethods: mapMethods
 };

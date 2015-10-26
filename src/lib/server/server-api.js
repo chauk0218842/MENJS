@@ -2,7 +2,7 @@
 
 import express from 'express';
 
-let createServer = express();
+let createServer = express;
 
 /**
  * Error handler
@@ -53,13 +53,13 @@ function listenToPort(server, port, callback) {
 
 /**
  * Create a server API
+ * @param server
  * @param config
  * @param router
  * @returns {{listen: Function, port: Function}}
  */
-function createServerAPI (config, router) {
+function configureServer (server, config, router) {
 
-  let server = createServer;
   let listeningServer;
 
   /**
@@ -98,5 +98,6 @@ function createServerAPI (config, router) {
 }
 
 export default {
-  createAPI: createServerAPI
+  create: createServer,
+  configure: configureServer
 };

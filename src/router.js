@@ -1,20 +1,22 @@
 'use strict';
 
-import router from './lib/router';
+import routerAPI from './lib/router/router-api';
 import routesAPI from './routes/routes-api';
 import mwAPI from './middleware/middleware-api';
 
 /**
  * Create router API
- * @param routes
  * @param rootMountPath
+ * @param routes
  * @returns {*}
  */
-function createRouterAPI(routes, rootMountPath) {
 
-  let routesCpy = router.mapMounts(function mapMountsHandler (route, mountPath, mount) {
+//TODO should re-consider how this is instantiated
+function createRouter(rootMountPath, routes) {
+
+  routerAPI.mapMounts(function mapMountsHandler (route, mountPath, mount) {
     if (route.methods) {
-      router.mapMethods(function (method) {
+      routerAPI.mapMethods(function (method) {
         let mw = [];
 
         if (method instanceof Array || method instanceof Function) {
@@ -30,18 +32,18 @@ function createRouterAPI(routes, rootMountPath) {
         }
 
         return mw;
-      }, route.methods, mountPath, mount);
+      }, mountPath, mount, route.methods);
     }
 
     if (route.routes) {
-      route.routes = router.mapMounts(mapMountsHandler, route.routes);
+      route.routes = routerAPI.mapMounts(mapMountsHandler, route.routes);
     }
 
     return route;
 
-  }, Object.assign ({}, routes));
+  }, routes);
 
-  return router.createAPI(router.create(null), rootMountPath, routesCpy);
+  return routerAPI.mapRoutes(routerAPI.create(null), rootMountPath, routes);
 }
 
-export default createRouterAPI(routesAPI, '/api');
+export default createRouter('/api', routesAPI);

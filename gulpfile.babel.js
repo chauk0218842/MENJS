@@ -7,15 +7,15 @@ import nodemon from 'gulp-nodemon';
 import path from 'path';
 
 gulp.task('lint', function () {
-  return gulp.src(path.join ('src/**/*.js'))
+  return gulp.src(path.join('src/**/*.js'))
     .pipe(jshint())
     .pipe(jshint.reporter('default'));
 });
 
-gulp.task('server', function (options) {
+gulp.task('serve', function (options) {
   const config = {
-    script: path.join(__dirname, 'src', 'server.es5.js'),
-    ext: 'js',
+    script: path.join(__dirname, 'src', 'app.es5.js'),
+    ext: 'src/**/*.js',
     env: {
       'NODE_ENV': 'development'
     },
@@ -30,13 +30,17 @@ gulp.task('server', function (options) {
 });
 
 gulp.task('test', function () {
-  //gulp.src('**/*.spec.js')
-  //  .pipe(mocha({
-  //    reporter: 'nyan',
-  //    clearRequireCache: true,
-  //    ignoreLeaks: true
-  //  }));
+  gulp.src('./src/**/*.spec.js')
+    .pipe(mocha({
+      reporter: 'spec',
+      clearRequireCache: true,
+      ignoreLeaks: true,
+      require: ['./src/specs/helpers/chai']
+    }))
+    .once('error', function () {
+      process.exit(1);
+    });
 });
 
-gulp.task('default', ['lint', 'test', 'server']);
+gulp.task('default', ['lint', 'test', 'serve']);
 gulp.task('watch', ['lint', 'test']);
